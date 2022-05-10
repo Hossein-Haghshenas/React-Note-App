@@ -24,6 +24,34 @@ code {
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
 }
 
+.note.new {
+  background: #9c95da;
+}
+
+.new textarea {
+  background: transparent;
+  border: none;
+  resize: none;
+}
+.new textarea::placeholder {
+  color: rgb(0, 68, 114);
+}
+.new textarea:focus {
+  outline: none;
+}
+
+.save {
+  background: #e1e1e1;
+  border: none;
+  border-radius: 1rem;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+.save:hover {
+  background: #ededed;
+}
+
 .note {
   display: flex;
   flex-direction: column;
@@ -32,6 +60,7 @@ code {
   border-radius: 0.6rem;
   padding: 1rem;
   min-height: 10rem;
+  white-space: pre-wrap;
 }
 
 .note-footer {
