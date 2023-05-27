@@ -3,38 +3,22 @@ import { nanoid } from "nanoid";
 import NotesList from "./components/NotesList";
 import Search from "./components/Search";
 import Header from "./components/Header";
+import { connectToLocalStorage } from "./utils/localStorage";
+import FirstNote from "./components/FirstNote";
 
 const App = () => {
-  const [notes, setNotes] = useState([
-    {
-      id: nanoid(),
-      text: "my first note !",
-      date: "15/04/2022",
-    },
-    {
-      id: nanoid(),
-      text: "my second note !",
-      date: "21/04/2022",
-    },
-    {
-      id: nanoid(),
-      text: "my third note !",
-      date: "28/04/2022",
-    },
-  ]);
+  const [notes, setNotes] = useState([]);
 
   const [searchText, setSearchText] = useState("");
 
   const [darkMode, setDarkMode] = useState(false);
 
-  useEffect(() => {
-    const ourNotes = JSON.parse(localStorage.getItem("react-notes-app-data"));
-    ourNotes && setNotes(ourNotes);
-  }, [notes]);
+  const notesReady = notes.filter((note) => note.text.toLowerCase().includes(searchText));
 
   useEffect(() => {
-    localStorage.setItem("react-notes-app-data", JSON.stringify(notes));
-  }, [notes]);
+    const ourNotes = connectToLocalStorage("react-notes-app-data");
+    ourNotes && setNotes(ourNotes);
+  }, [setNotes]);
 
   const addNote = (text) => {
     const date = new Date();
@@ -44,29 +28,23 @@ const App = () => {
       text,
       date: date.toLocaleString(),
     };
-
     setNotes([...notes, newNote]);
+    connectToLocalStorage("react-notes-app-data", [...notes, newNote]);
   };
 
   const deleteNote = (id) => {
     const newNotes = notes.filter((note) => note.id !== id);
     setNotes(newNotes);
+    connectToLocalStorage("react-notes-app-data", newNotes);
   };
-
-  const notesReady = notes.filter((note) =>
-    note.text.toLowerCase().includes(searchText)
-  );
 
   return (
     <div className={` ${darkMode && `dark-mode`}`}>
       <div className="container">
         <Header handleDarkMode={setDarkMode} />
         <Search handleSearchNote={setSearchText} />
-        <NotesList
-          notes={notesReady}
-          handleAddNote={addNote}
-          handleDeleteNote={deleteNote}
-        />
+        {notes.length === 0 && <FirstNote darkMode={darkMode} />}
+        <NotesList notes={notesReady} handleAddNote={addNote} handleDeleteNote={deleteNote} />
       </div>
     </div>
   );
